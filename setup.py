@@ -13,7 +13,7 @@ def read(filename):
 
 setup(
     name="backoff_sleeper",
-    version="0.1.0",
+    version="0.1.1",
     url="",
     license="MIT",
     author="fx-kirin",
@@ -34,5 +34,5 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    data_files=[("", ["requirements.txt"])],
+    data_files=[("", [])],
 )
