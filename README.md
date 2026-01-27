@@ -1,17 +1,36 @@
-# backoff_sleeper
+# backoff-sleeper
 
-[![Latest PyPI version](https://img.shields.io/pypi/v/package_name.svg)](https://pypi.python.org/pypi/backoff_sleeper)
+`backoff-sleeper` is a small utility that increases sleep time in steps when
+repeated events are spaced beyond a configured threshold, and resets back to
+the minimum sleep when events are too close together.
+
+## Install
+
+```bash
+pip install backoff-sleeper
+```
 
 ## Usage
 
-## Installation
+```python
+from backoff_sleeper import BackoffSleeper
 
-### Requirements
+sleeper = BackoffSleeper(
+    min_sleep_seconds=0.5,
+    max_sleep_seconds=5.0,
+    steps_to_max=5,
+    threshold_seconds=10.0,
+)
 
-## Compatibility
+# Call on each repeat; sleep time increases when elapsed >= threshold_seconds.
+sleeper.sleep()
+```
 
-## Licence
+## Behavior
 
-## Authors
-
-backoff_sleeper was written by [fx-kirin](fx.kirin@gmail.com).
+- The first call sleeps for `min_sleep_seconds`.
+- If the time since the previous sleep is greater than or equal to
+  `threshold_seconds`, the sleep duration increases by one step (up to
+  `max_sleep_seconds`).
+- If the time since the previous sleep is less than `threshold_seconds`, the
+  sleep duration resets to `min_sleep_seconds`.
