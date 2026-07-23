@@ -1,7 +1,7 @@
 """Sleep backoff utility.
 
-A helper that gradually increases sleep time when events repeat after a
-threshold and resets when they are too close together.
+A helper that gradually increases sleep time when events repeat before a
+threshold and resets when they are far enough apart.
 """
 
 __version__ = "0.1.0"
@@ -21,7 +21,7 @@ class BackoffSleeper:
         min_sleep_seconds: Minimum sleep duration in seconds.
         max_sleep_seconds: Maximum sleep duration in seconds.
         steps_to_max: Number of steps to reach max sleep.
-        threshold_seconds: Increase sleep when elapsed time meets or exceeds this.
+        threshold_seconds: Increase sleep when elapsed time is less than this.
     """
 
     min_sleep_seconds: float
@@ -44,21 +44,21 @@ class BackoffSleeper:
     def sleep(self) -> float:
         """Sleep for the current duration and return it.
 
-        If the time since the previous sleep is >= threshold_seconds, the sleep
+        If the time since the previous sleep is < threshold_seconds, the sleep
         duration increases by one step (up to max). Otherwise, the sleep
         duration resets to the minimum.
         """
 
         now = time.monotonic()
 
-        if self._last_sleep_at is not None:
+        if self._last_sleep_at is None:
+            self._step = 0
+        else:
             elapsed = now - self._last_sleep_at
-            if elapsed >= self.threshold_seconds:
+            if elapsed < self.threshold_seconds:
                 self._step = min(self._step + 1, self.steps_to_max)
             else:
                 self._step = 0
-        else:
-            self._step = 0
 
         sleep_seconds = self._current_sleep_seconds()
         time.sleep(sleep_seconds)
